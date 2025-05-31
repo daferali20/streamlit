@@ -6,44 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
-# -- تنبيه التلقرام  ---
-# دالة إرسال التنبيه إلى Telegram
-def send_telegram_alert(message: str):
-    """إرسال تنبيه إلى Telegram"""
-    try:
-        # قراءة التوكن و chat_id من secrets
-        bot_token = st.secrets["telegram"]["bot_token"]
-        chat_id = st.secrets["telegram"]["chat_id"]
 
-        if not bot_token or not chat_id:
-            st.warning("⚠️ إعدادات Telegram غير مكتملة")
-            return False
-
-        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-        payload = {
-            "chat_id": chat_id,
-            "text": message,
-            "parse_mode": "HTML"
-        }
-
-        response = requests.post(url, json=payload)
-        return response.status_code == 200
-
-    except Exception as e:
-        st.error(f"❌ فشل إرسال التنبيه: {str(e)}")
-        return False
-
-# --- نهاية الكود ---
-st.divider()
-st.subheader("🚀 تجربة إرسال تنبيه")
-
-sample_message = "🚨 <b>تنبيه تجريبي من بوت الأسهم</b>\nاختبار الاتصال بـ Telegram."
-
-if st.button("📨 إرسال تنبيه تجريبي"):
-    if send_telegram_alert(sample_message):
-        st.success("✅ تم إرسال التنبيه بنجاح")
-    else:
-        st.error("❌ فشل في إرسال التنبيه")
 # تهيئة الصفحة
 st.set_page_config(
     page_title="ProTrade - أداة المضاربة اليومية",
@@ -55,30 +18,18 @@ st.set_page_config(
 # إعداد التطبيق الرئيسي
 def main():
     # --- شريط جانبي للمعايير ---
-   with st.sidebar.expander("⚙️ إعدادات Telegram"):
-    if 'telegram_setup' not in st.session_state:
-        st.session_state.telegram_setup = {
-            'bot_token': st.secrets.telegram.get('bot_token', ''),
-            'chat_id': st.secrets.telegram.get('chat_id', '')
-        }
-
-    new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
-    new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
-
-    if st.button("حفظ الإعدادات"):
-        st.session_state.telegram_setup.update({
-            'bot_token': new_token,
-            'chat_id': new_chat_id
-        })
-        st.success("✅ تم حفظ الإعدادات")
-
-    if st.button("اختبار الإرسال"):
-        if send_telegram_alert("🔔 <b>هذا رسالة اختبار من تطبيق التداول</b>\nتم تكوين الإعدادات بنجاح!"):
-            st.success("✅ تم إرسال الرسالة الاختبارية بنجاح")
-        else:
-            st.error("❌ فشل إرسال الرسالة الاختبارية")
-
-    # ---  النهاية --
+    st.sidebar.header("⚙️ معايير البحث المتقدمة")
+    
+    with st.sidebar.expander("🔍 فلاتر الأسهم"):
+        min_volume = st.number_input("الحد الأدنى لحجم التداول (مليون):", 1, 1000, 5)
+        min_change = st.number_input("الحد الأدنى للتغيير اليومي (%):", 0.1, 50.0, 2.0)
+        sector = st.selectbox("القطاع:", ["الكل", "تكنولوجيا", "مالية", "رعاية صحية", "طاقة"])
+        price_range = st.slider("نطاق السعر ($):", 0.0, 1000.0, (10.0, 500.0))
+    
+    with st.sidebar.expander("🔔 إعدادات التنبيهات"):
+        alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
+        enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
+    
     # --- قسم المؤشرات الرئيسية ---
     st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
     
@@ -250,25 +201,6 @@ def main():
                 
                 if last_volume > avg_volume * 1.5:
                     st.info("حجم تداول مرتفع: حركة قوية")
-        #--- بداية كود ---
-# بعد تصفية الأسهم
-alert_stocks = df_filtered[df_filtered["% Change"].abs() >= alert_threshold]
-
-for _, row in alert_stocks.iterrows():
-    direction = "صعود" if row["% Change"] > 0 else "هبوط"
-    alert_msg = f"<b>تنبيه تداول!</b>\n\n"
-    alert_msg += f"السهم: <code>{row['Symbol']}</code>\n"
-    alert_msg += f"الاتجاه: {direction}\n"
-    alert_msg += f"التغير: {abs(row['% Change'])}%\n"
-    alert_msg += f"الحجم: {row['Volume']/1e6:.2f}M\n"
-    alert_msg += f"السعر: ${row['Price']:.2f}"
-    
-    if st.toggle(f"إرسال تنبيه لـ {row['Symbol']}", key=f"alert_{row['Symbol']}"):
-        if send_telegram_alert(alert_msg):
-            st.success("تم إرسال التنبيه!")
-        else:
-            st.error("فشل إرسال التنبيه")
-        #---- نهاية كود ----
         
         # --- قسم الأخبار ---
         st.markdown("### 📰 آخر الأخبار المؤثرة على السوق")
