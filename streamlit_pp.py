@@ -113,7 +113,7 @@ if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
         
         return df.reset_index(drop=True)
     
-    # --- تصفية وعرض البيانات ---
+# --- تصفية وعرض البيانات ---
   def main():
     df = get_active_stocks()
 
