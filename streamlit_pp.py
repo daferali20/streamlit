@@ -329,34 +329,7 @@ def main():
             use_container_width=True
         )
         #----  الاضافة الجديدة ---
-         st.set_page_config(page_title="AI Stock Predictor", layout="wide")
-          st.title("🔮 التنبؤ باتجاه السهم")
-
-        ticker = st.text_input("ادخل رمز السهم", "AAPL")
-        bot_token = st.text_input("Telegram Bot Token", type="password")
-        chat_id = st.text_input("Telegram Chat ID")
-
-    if st.button("ابدأ التحليل"):
-        df = get_stock_data(ticker)
-        model, acc = train_predictor(df)
-
-        st.success(f"✅ دقة النموذج: {acc:.2%}")
-    
-        latest = df[["RSI", "SMA_20", "SMA_50", "MACD"]].iloc[-1:]
-        prediction = model.predict(latest)[0]
-
-    if prediction == 1:
-        msg = f"📈 السهم <b>{ticker}</b> متوقع له <b>الصعود</b>"
-        st.markdown(msg, unsafe_allow_html=True)
-    else:
-        msg = f"📉 السهم <b>{ticker}</b> متوقع له <b>الهبوط</b>"
-        st.markdown(msg, unsafe_allow_html=True)
-
-    if bot_token and chat_id:
-        if send_telegram_alert(msg, bot_token, chat_id):
-            st.success("✅ تم إرسال التنبيه لتليجرام")
-        else:
-            st.error("❌ فشل إرسال التنبيه")
+         
         #------------------------------------------------------------
         # ملخص المحفظة
         total_value = st.session_state.portfolio['Value'].sum()
