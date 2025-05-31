@@ -114,22 +114,25 @@ if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
         return df.reset_index(drop=True)
     
     # --- تصفية وعرض البيانات ---
-   df = get_active_stocks()
+  def main():
+    df = get_active_stocks()
 
-if df is None or df.empty:
-    st.warning("تعذر تحميل بيانات الأسهم أو لا توجد بيانات.")
-    st.stop()
+    if df is None or df.empty:
+        st.warning("تعذر تحميل بيانات الأسهم أو لا توجد بيانات.")
+        st.stop()
 
-# ثم الفلترة
-df_filtered = df[
-    (df["Volume"] >= min_volume * 1e6) & 
-    (df["% Change"].abs() >= min_change) & 
-    (df["Price"] >= price_range[0]) & 
-    (df["Price"] <= price_range[1])
-]
-    
-    if sector != "الكل":
-        df_filtered = df_filtered[df_filtered["Sector"] == sector]
+    df_filtered = df[
+        (df["Volume"] >= min_volume * 1e6) & 
+        (df["% Change"].abs() >= min_change) & 
+        (df["Price"] >= price_range[0]) & 
+        (df["Price"] <= price_range[1])
+    ]
+
+    st.dataframe(df_filtered)
+
+if __name__ == "__main__":
+    st.set_page_config(page_title="ProTrade - أداة المضاربة اليومية", layout="wide", initial_sidebar_state="expanded")
+    main()
     
     # --- عرض الأسهم الموصى بها ---
     st.markdown(f"### 📈 أفضل الأسهم للمضاربة اليومية (حجم > {min_volume}M, تغيير > {min_change}%)")
