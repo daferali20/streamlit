@@ -4,3 +4,4 @@ pandas
 requests
 plotly
 lxml
+textblob
