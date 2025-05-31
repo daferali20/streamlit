@@ -1,0 +1,6 @@
+install_requires=[
+    'fastapi>=0.109.0',
+    'uvicorn>=0.27.0',
+    'httpx>=0.27.0',
+    'pydantic>=2.11.5'
+]
