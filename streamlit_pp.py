@@ -333,16 +333,30 @@ def get_market_news():
     except:
         return pd.DataFrame()
 
-@st.cache_data(ttl=600)  # تحديث كل 10 دقائق
+@st.cache_data(ttl=600)
 def get_stock_news(symbol):
     try:
         api_key = st.secrets.get("FINNHUB_API_KEY", "d0s84hpr01qkkpltj8j0d0s84hpr01qkkpltj8jg")
-        url = f"https://finnhub.io/api/v1/company-news?symbol={symbol}&from={(datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')}&to={datetime.now().strftime('%Y-%m-%d')}&token={api_key}"
-        response = requests.get(url).json()
-        df = pd.DataFrame(response)[:5]  # عرض آخر 5 أخبار للسهم
-        return df[['headline', 'source', 'summary', 'url', 'datetime']]
-    except:
-        return pd.DataFrame()
+        from_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        to_date = datetime.now().strftime('%Y-%m-%d')
+        url = f"https://finnhub.io/api/v1/company-news?symbol={symbol}&from={from_date}&to={to_date}&token={api_key}"
 
-if __name__ == "__main__":
-    main()
+        response = requests.get(url)
+        if response.status_code != 200:
+            st.warning("لم يتم جلب الأخبار بنجاح.")
+            return pd.DataFrame()
+
+        data = response.json()
+        df = pd.DataFrame(data)
+        if df.empty:
+            return df
+
+        df = df.sort_values("datetime", ascending=False).head(5)
+        required_cols = ['headline', 'source', 'summary', 'url', 'datetime']
+        for col in required_cols:
+            if col not in df.columns:
+                df[col] = None
+        return df[required_cols]
+    except Exception as e:
+        st.error(f"حدث خطأ أثناء جلب الأخبار: {e}")
+        return pd.DataFrame()
