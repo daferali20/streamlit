@@ -93,8 +93,7 @@ def main():
         dow_change = round(dow.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
         st.metric("Dow Jones", f"{dow.history(period='1d')['Close'].iloc[-1]:.2f}", f"{dow_change}%")
     #--- الشريط الجانبي للتلقرام ---
-
-   with st.sidebar.expander("⚙️ إعدادات Telegram"):
+with st.sidebar.expander("⚙️ إعدادات Telegram"):
     new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
     new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
 
