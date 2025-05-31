@@ -7,38 +7,32 @@ from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
 # -- تنبيه التلقرام  ---
-# ضع هنا التوكن الخاص بالبوت
-bot_token = "1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4"
-
-# معرف المحادثة (شخصي أو قناة أو جروب)
-chat_id = "@D_Optionbot"  # ضع هنا الـ chat_id الصحيح
-
-# الرسالة التي تريد إرسالها
-message = "🚨 <b>سهم TSLA تجاوز المقاومة</b>\nالهدف التالي: 750 دولار"
-
-# إعدادات الطلب
+# دالة إرسال التنبيه إلى Telegram
 def send_telegram_alert(message: str):
     """إرسال تنبيه إلى Telegram"""
     try:
-        bot_token = st.secrets.telegram.bot_token
-        chat_id = st.secrets.telegram.chat_id
-        
+        # قراءة التوكن و chat_id من secrets
+        bot_token = st.secrets["telegram"]["bot_token"]
+        chat_id = st.secrets["telegram"]["chat_id"]
+
         if not bot_token or not chat_id:
-            st.warning("إعدادات Telegram غير مكتملة")
+            st.warning("⚠️ إعدادات Telegram غير مكتملة")
             return False
-            
+
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {
-          "chat_id": chat_id,
-          "text": message,
-          "parse_mode": "HTML"
+            "chat_id": chat_id,
+            "text": message,
+            "parse_mode": "HTML"
         }
-        
+
         response = requests.post(url, json=payload)
         return response.status_code == 200
+
     except Exception as e:
-        st.error(f"فشل إرسال التنبيه: {str(e)}")
+        st.error(f"❌ فشل إرسال التنبيه: {str(e)}")
         return False
+
 # --- نهاية الكود ---
 # تهيئة الصفحة
 st.set_page_config(
