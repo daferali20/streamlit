@@ -114,15 +114,19 @@ if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
         return df.reset_index(drop=True)
     
     # --- تصفية وعرض البيانات ---
-    df = get_active_stocks()
-    
-    # تطبيق الفلاتر
-    df_filtered = df[
-        (df["Volume"] >= min_volume * 1e6) & 
-        (df["% Change"].abs() >= min_change) &
-        (df["Price"] >= price_range[0]) & 
-        (df["Price"] <= price_range[1])
-    ]
+   df = get_active_stocks()
+
+if df is None or df.empty:
+    st.warning("تعذر تحميل بيانات الأسهم أو لا توجد بيانات.")
+    st.stop()
+
+# ثم الفلترة
+df_filtered = df[
+    (df["Volume"] >= min_volume * 1e6) & 
+    (df["% Change"].abs() >= min_change) & 
+    (df["Price"] >= price_range[0]) & 
+    (df["Price"] <= price_range[1])
+]
     
     if sector != "الكل":
         df_filtered = df_filtered[df_filtered["Sector"] == sector]
