@@ -6,7 +6,7 @@ import numpy as np
 import plotly.express as px
 from datetime import datetime
 import random
-
+import yfinance as yf
 # إعداد الصفحة
 st.set_page_config(page_title="أداة المضاربة اليومية", layout="wide")
 
@@ -19,26 +19,36 @@ def load_market_data():
     }
 
 # إنشاء بيانات وهمية للأسهم
-def load_stock_data():
-    symbols = [f"STK{i}" for i in range(1, 51)]
+def load_stock_data_real(symbols):
     data = []
     for symbol in symbols:
-        current_price = round(random.uniform(10, 500), 2)
-        previous_close = current_price + round(random.uniform(-5, 5), 2)
-        volume = random.randint(10000, 1000000)
-        change = round((current_price - previous_close) / previous_close * 100, 2)
-        volatility = round(random.uniform(1, 5), 2)
-        sentiment = random.uniform(-1, 1)
-        data.append({
-            "Symbol": symbol,
-            "Current Price": current_price,
-            "Previous Close": previous_close,
-            "Volume": volume,
-            "Change %": change,
-            "Volatility": volatility,
-            "Sentiment": sentiment
-        })
+        try:
+            stock = yf.Ticker(symbol)
+            info = stock.info
+            hist = stock.history(period="2d")  # اليوم الحالي واليوم السابق
+
+            if hist.shape[0] < 2:
+                continue
+
+            current_price = hist['Close'].iloc[-1]
+            previous_close = hist['Close'].iloc[-2]
+            volume = hist['Volume'].iloc[-1]
+            change = round((current_price - previous_close) / previous_close * 100, 2)
+
+            data.append({
+                "Symbol": symbol,
+                "Current Price": round(current_price, 2),
+                "Previous Close": round(previous_close, 2),
+                "Volume": int(volume),
+                "Change %": change,
+                "Volatility": round(abs(current_price - previous_close), 2),  # تبسيط للتقلب
+                "Sentiment": 0  # مؤقتًا 0 - يمكن استبداله بتحليل مشاعر لاحقًا
+            })
+
+        except Exception as e:
+            print(f"خطأ في السهم {symbol}: {e}")
     return pd.DataFrame(data)
+
 
 # تحليل معنويات السوق البسيط
 def analyze_market_sentiment(df):
