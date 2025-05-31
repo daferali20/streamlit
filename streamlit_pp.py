@@ -29,7 +29,35 @@ def main():
     with st.sidebar.expander("🔔 إعدادات التنبيهات"):
         alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
         enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
-    
+    #----
+def send_telegram_alert(message: str):
+    """إرسال تنبيه إلى Telegram"""
+    try:
+        bot_token = st.session_state.telegram_setup["bot_token"]
+        chat_id = st.session_state.telegram_setup["chat_id"]
+
+        if not bot_token or not chat_id:
+            st.warning("⚠️ لم يتم ضبط إعدادات Telegram بعد.")
+            return False
+
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload = {
+            "chat_id": chat_id,
+            "text": message,
+            "parse_mode": "HTML"
+        }
+
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            return True
+        else:
+            st.error(f"❌ فشل الإرسال. الكود: {response.status_code} - {response.text}")
+            return False
+
+    except Exception as e:
+        st.error(f"❌ حدث خطأ أثناء الإرسال: {e}")
+        return False
+    #----
     # --- قسم المؤشرات الرئيسية ---
     st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
     
