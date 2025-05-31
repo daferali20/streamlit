@@ -103,9 +103,8 @@ def main():
     price_range = st.sidebar.slider("نطاق السعر", 10.0, 500.0, (50.0, 200.0))
 
     # تحميل بيانات الأسهم وتطبيق الفلترة
-    df = load_stock_data()
-    filtered_df = filter_stocks(df, min_volume, min_change, price_range[0], price_range[1])
-
+    stock_symbols = ["AAPL", "MSFT", "GOOG", "TSLA", "AMZN", "NVDA", "META", "AMD", "NFLX", "BA"]
+    df = load_stock_data_real(stock_symbols)
     # عرض معنويات السوق
     sentiment_result = analyze_market_sentiment(filtered_df)
     st.subheader("🧠 تحليل معنويات السوق")
