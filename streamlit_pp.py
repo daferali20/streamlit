@@ -37,7 +37,7 @@ if selected_stock:
     st.line_chart(stock_data["Close"])
 
 # قسم الأخبار (باستخدام Finnhub API - يحتاج API Key)
-api_key = "your_finnhub_api_key"  # استبدله بمفتاحك
+api_key = "d0s84hpr01qkkpltj8j0d0s84hpr01qkkpltj8jg"  # استبدله بمفتاحك
 @st.cache_data
 def get_news():
     url = f"https://finnhub.io/api/v1/news?category=general&token={api_key}"
