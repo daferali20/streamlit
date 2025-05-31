@@ -34,6 +34,16 @@ def send_telegram_alert(message: str):
         return False
 
 # --- نهاية الكود ---
+st.divider()
+st.subheader("🚀 تجربة إرسال تنبيه")
+
+sample_message = "🚨 <b>تنبيه تجريبي من بوت الأسهم</b>\nاختبار الاتصال بـ Telegram."
+
+if st.button("📨 إرسال تنبيه تجريبي"):
+    if send_telegram_alert(sample_message):
+        st.success("✅ تم إرسال التنبيه بنجاح")
+    else:
+        st.error("❌ فشل في إرسال التنبيه")
 # تهيئة الصفحة
 st.set_page_config(
     page_title="ProTrade - أداة المضاربة اليومية",
@@ -45,40 +55,29 @@ st.set_page_config(
 # إعداد التطبيق الرئيسي
 def main():
     # --- شريط جانبي للمعايير ---
-    st.sidebar.header("⚙️ معايير البحث المتقدمة")
-    
-    with st.sidebar.expander("🔍 فلاتر الأسهم"):
-        min_volume = st.number_input("الحد الأدنى لحجم التداول (مليون):", 1, 1000, 5)
-        min_change = st.number_input("الحد الأدنى للتغيير اليومي (%):", 0.1, 50.0, 2.0)
-        sector = st.selectbox("القطاع:", ["الكل", "تكنولوجيا", "مالية", "رعاية صحية", "طاقة"])
-        price_range = st.slider("نطاق السعر ($):", 0.0, 1000.0, (10.0, 500.0))
-    
-    with st.sidebar.expander("🔔 إعدادات التنبيهات"):
-        alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
-        enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
-    # -----  الجانبي للتلقرام ---
-with st.sidebar.expander("⚙️ إعدادات Telegram"):
+   with st.sidebar.expander("⚙️ إعدادات Telegram"):
     if 'telegram_setup' not in st.session_state:
         st.session_state.telegram_setup = {
             'bot_token': st.secrets.telegram.get('bot_token', ''),
             'chat_id': st.secrets.telegram.get('chat_id', '')
         }
-    
+
     new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
     new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
-    
+
     if st.button("حفظ الإعدادات"):
         st.session_state.telegram_setup.update({
             'bot_token': new_token,
             'chat_id': new_chat_id
         })
-        st.success("تم حفظ الإعدادات")
-        
+        st.success("✅ تم حفظ الإعدادات")
+
     if st.button("اختبار الإرسال"):
         if send_telegram_alert("🔔 <b>هذا رسالة اختبار من تطبيق التداول</b>\nتم تكوين الإعدادات بنجاح!"):
-            st.success("تم إرسال الرسالة الاختبارية بنجاح")
+            st.success("✅ تم إرسال الرسالة الاختبارية بنجاح")
         else:
-            st.error("فشل إرسال الرسالة الاختبارية")
+            st.error("❌ فشل إرسال الرسالة الاختبارية")
+
     # ---  النهاية --
     # --- قسم المؤشرات الرئيسية ---
     st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
