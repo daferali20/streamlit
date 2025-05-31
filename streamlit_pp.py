@@ -5,7 +5,46 @@ import requests
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
-
+# هذا السطر يجب أن يأتي قبل أي استخدام لـ st.*
+st.set_page_config(
+    page_title="ProTrade - أداة المضاربة اليومية",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+# إعداد التطبيق الرئيسي
+def main():
+    # --- شريط جانبي للمعايير ---
+    st.sidebar.header("⚙️ معايير البحث المتقدمة")
+    
+    with st.sidebar.expander("🔍 فلاتر الأسهم"):
+        min_volume = st.number_input("الحد الأدنى لحجم التداول (مليون):", 1, 1000, 5)
+        min_change = st.number_input("الحد الأدنى للتغيير اليومي (%):", 0.1, 50.0, 2.0)
+        sector = st.selectbox("القطاع:", ["الكل", "تكنولوجيا", "مالية", "رعاية صحية", "طاقة"])
+        price_range = st.slider("نطاق السعر ($):", 0.0, 1000.0, (10.0, 500.0))
+    
+    with st.sidebar.expander("🔔 إعدادات التنبيهات"):
+        alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
+        enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
+    
+    # --- قسم المؤشرات الرئيسية ---
+    st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        sp500 = yf.Ticker("^GSPC")
+        sp_change = round(sp500.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
+        st.metric("S&P 500", f"{sp500.history(period='1d')['Close'].iloc[-1]:.2f}", f"{sp_change}%")
+    
+    with col2:
+        nasdaq = yf.Ticker("^IXIC")
+        nasdaq_change = round(nasdaq.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
+        st.metric("NASDAQ", f"{nasdaq.history(period='1d')['Close'].iloc[-1]:.2f}", f"{nasdaq_change}%")
+    
+    with col3:
+        dow = yf.Ticker("^DJI")
+        dow_change = round(dow.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
+        st.metric("Dow Jones", f"{dow.history(period='1d')['Close'].iloc[-1]:.2f}", f"{dow_change}%")
 # محاولة استيراد تحليل المشاعر
 try:
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -51,48 +90,6 @@ if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
     avg_sentiment = sum(sentiments) / len(sentiments)
     
     st.write(f"تحليل المشاعر: {get_sentiment_label(avg_sentiment)} ({avg_sentiment:.2f})")
-
-# تهيئة الصفحة
-st.set_page_config(
-    page_title="ProTrade - أداة المضاربة اليومية",
-    page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# إعداد التطبيق الرئيسي
-def main():
-    # --- شريط جانبي للمعايير ---
-    st.sidebar.header("⚙️ معايير البحث المتقدمة")
-    
-    with st.sidebar.expander("🔍 فلاتر الأسهم"):
-        min_volume = st.number_input("الحد الأدنى لحجم التداول (مليون):", 1, 1000, 5)
-        min_change = st.number_input("الحد الأدنى للتغيير اليومي (%):", 0.1, 50.0, 2.0)
-        sector = st.selectbox("القطاع:", ["الكل", "تكنولوجيا", "مالية", "رعاية صحية", "طاقة"])
-        price_range = st.slider("نطاق السعر ($):", 0.0, 1000.0, (10.0, 500.0))
-    
-    with st.sidebar.expander("🔔 إعدادات التنبيهات"):
-        alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
-        enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
-    
-    # --- قسم المؤشرات الرئيسية ---
-    st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
-    
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        sp500 = yf.Ticker("^GSPC")
-        sp_change = round(sp500.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
-        st.metric("S&P 500", f"{sp500.history(period='1d')['Close'].iloc[-1]:.2f}", f"{sp_change}%")
-    
-    with col2:
-        nasdaq = yf.Ticker("^IXIC")
-        nasdaq_change = round(nasdaq.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
-        st.metric("NASDAQ", f"{nasdaq.history(period='1d')['Close'].iloc[-1]:.2f}", f"{nasdaq_change}%")
-    
-    with col3:
-        dow = yf.Ticker("^DJI")
-        dow_change = round(dow.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
-        st.metric("Dow Jones", f"{dow.history(period='1d')['Close'].iloc[-1]:.2f}", f"{dow_change}%")
     
     # --- جلب بيانات الأسهم ---
     @st.cache_data(ttl=300)  # تحديث كل 5 دقائق
