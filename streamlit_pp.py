@@ -6,7 +6,30 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
-
+# -- تنبيه التلقرام  ---
+def send_telegram_alert(message: str):
+    """إرسال تنبيه إلى Telegram"""
+    try:
+        bot_token = st.secrets.telegram.bot_token
+        chat_id = st.secrets.telegram.chat_id
+        
+        if not bot_token or not chat_id:
+            st.warning("إعدادات Telegram غير مكتملة")
+            return False
+            
+        url = f"https://api.telegram.org/bot{1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4}/sendMessage"
+        payload = {
+            "chat_id": @D_Optionbot,
+            "text": message,
+            "parse_mode": "HTML"
+        }
+        
+        response = requests.post(url, json=payload)
+        return response.status_code == 200
+    except Exception as e:
+        st.error(f"فشل إرسال التنبيه: {str(e)}")
+        return False
+# --- نهاية الكود ---
 # تهيئة الصفحة
 st.set_page_config(
     page_title="ProTrade - أداة المضاربة اليومية",
@@ -201,6 +224,25 @@ def main():
                 
                 if last_volume > avg_volume * 1.5:
                     st.info("حجم تداول مرتفع: حركة قوية")
+        #--- بداية كود ---
+# بعد تصفية الأسهم
+alert_stocks = df_filtered[df_filtered["% Change"].abs() >= alert_threshold]
+
+for _, row in alert_stocks.iterrows():
+    direction = "صعود" if row["% Change"] > 0 else "هبوط"
+    alert_msg = f"<b>تنبيه تداول!</b>\n\n"
+    alert_msg += f"السهم: <code>{row['Symbol']}</code>\n"
+    alert_msg += f"الاتجاه: {direction}\n"
+    alert_msg += f"التغير: {abs(row['% Change'])}%\n"
+    alert_msg += f"الحجم: {row['Volume']/1e6:.2f}M\n"
+    alert_msg += f"السعر: ${row['Price']:.2f}"
+    
+    if st.toggle(f"إرسال تنبيه لـ {row['Symbol']}", key=f"alert_{row['Symbol']}"):
+        if send_telegram_alert(alert_msg):
+            st.success("تم إرسال التنبيه!")
+        else:
+            st.error("فشل إرسال التنبيه")
+        #---- نهاية كود ----
         
         # --- قسم الأخبار ---
         st.markdown("### 📰 آخر الأخبار المؤثرة على السوق")
