@@ -5,7 +5,31 @@ import requests
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
+try:
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+    analyzer = SentimentIntensityAnalyzer()
+    SENTIMENT_ANALYSIS_ENABLED = True
+except ImportError:
+    SENTIMENT_ANALYSIS_ENABLED = False
+    st.warning("تحليل المشاعر غير متوفر بسبب عدم تثبيت المكتبات المطلوبة")
 
+# وظيفة التحليل:
+def get_sentiment_label(score):
+    if not SENTIMENT_ANALYSIS_ENABLED:
+        return "غير متاح"
+    
+    if score > 0.05:
+        return "إيجابي"
+    elif score < -0.05:
+        return "سلبي"
+    return "محايد"
+
+# عند الاستخدام:
+if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
+    sentiments = [analyzer.polarity_scores(str(headline))['compound'] for headline in news['headline']]
+    avg_sentiment = sum(sentiments) / len(sentiments)
+    
+    st.write(f"تحليل المشاعر: {get_sentiment_label(avg_sentiment)} ({avg_sentiment:.2f})")
 # تهيئة الصفحة
 st.set_page_config(
     page_title="ProTrade - أداة المضاربة اليومية",
