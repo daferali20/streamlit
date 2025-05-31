@@ -6,7 +6,7 @@ import numpy as np
 import plotly.express as px
 from datetime import datetime
 import random
-import yfinance as yf
+
 # إعداد الصفحة
 st.set_page_config(page_title="أداة المضاربة اليومية", layout="wide")
 
