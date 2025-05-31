@@ -6,15 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
-
-# تهيئة الصفحة
-st.set_page_config(
-    page_title="ProTrade - أداة المضاربة اليومية",
-    page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
- #----
+#----
 def send_telegram_alert(message: str):
     """إرسال تنبيه إلى Telegram"""
     try:
@@ -43,6 +35,14 @@ def send_telegram_alert(message: str):
         st.error(f"❌ حدث خطأ أثناء الإرسال: {e}")
         return False
     #----
+# تهيئة الصفحة
+st.set_page_config(
+    page_title="ProTrade - أداة المضاربة اليومية",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+ 
 st.divider()
 st.subheader("🚀 تجربة إرسال تنبيه")
 
