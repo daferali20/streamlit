@@ -1,11 +1,6 @@
+streamlit
 yfinance
 pandas
 requests
 plotly
-fastapi
-httpx
-uvicorn
-pydantic>=2.0
-streamlit
-requests
 websockets
