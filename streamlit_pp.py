@@ -60,7 +60,7 @@ with st.sidebar.expander("⚙️ إعدادات Telegram"):
             'chat_id': st.secrets.telegram.get('chat_id', '')
         }
     
-    new_token = st.text_input("1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4", st.session_state.telegram_setup['bot_token'])
+    new_token = st.text_input("1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4", st.session_state.telegram_setup['1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4'])
     new_chat_id = st.text_input("D_Optionbot", st.session_state.telegram_setup['chat_id'])
     
     if st.button("حفظ الإعدادات"):
