@@ -19,7 +19,7 @@ def send_telegram_alert(message: str):
             
         url = f"https://api.telegram.org/bot{1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4}/sendMessage"
         payload = {
-            "chat_id": @D_Optionbot,
+            "chat_id": D_Optionbot,
             "text": message,
             "parse_mode": "HTML"
         }
