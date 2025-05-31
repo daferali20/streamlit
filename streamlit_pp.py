@@ -52,7 +52,30 @@ def main():
     with st.sidebar.expander("🔔 إعدادات التنبيهات"):
         alert_threshold = st.number_input("حد التنبيه (% تغيير):", 0.1, 20.0, 5.0)
         enable_telegram = st.checkbox("تفعيل تنبيهات التليجرام")
+    # -----  الجانبي للتلقرام ---
+with st.sidebar.expander("⚙️ إعدادات Telegram"):
+    if 'telegram_setup' not in st.session_state:
+        st.session_state.telegram_setup = {
+            'bot_token': st.secrets.telegram.get('bot_token', ''),
+            'chat_id': st.secrets.telegram.get('chat_id', '')
+        }
     
+    new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
+    new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
+    
+    if st.button("حفظ الإعدادات"):
+        st.session_state.telegram_setup.update({
+            'bot_token': new_token,
+            'chat_id': new_chat_id
+        })
+        st.success("تم حفظ الإعدادات")
+        
+    if st.button("اختبار الإرسال"):
+        if send_telegram_alert("🔔 <b>هذا رسالة اختبار من تطبيق التداول</b>\nتم تكوين الإعدادات بنجاح!"):
+            st.success("تم إرسال الرسالة الاختبارية بنجاح")
+        else:
+            st.error("فشل إرسال الرسالة الاختبارية")
+    # ---  النهاية --
     # --- قسم المؤشرات الرئيسية ---
     st.markdown("## 📊 لوحة تحكم المضاربة اليومية")
     
