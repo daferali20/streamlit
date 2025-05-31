@@ -23,7 +23,14 @@ def get_sentiment_label(score):
     elif score < -0.05:
         return "سلبي"
     return "محايد"
-
+if not SENTIMENT_ANALYSIS_ENABLED:
+    if st.button("تثبيت مكتبات تحليل المشاعر"):
+        try:
+            import subprocess
+            subprocess.run(["pip", "install", "vaderSentiment", "textblob"])
+            st.success("تم التثبيت بنجاح! يرجى إعادة تشغيل التطبيق")
+        except:
+            st.error("فشل التثبيت. يرجى التحقق من الأذونات")
 # عند الاستخدام:
 if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
     sentiments = [analyzer.polarity_scores(str(headline))['compound'] for headline in news['headline']]
