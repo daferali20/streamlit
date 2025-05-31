@@ -19,34 +19,25 @@ def load_market_data():
     }
 
 # إنشاء بيانات وهمية للأسهم
-def load_stock_data_real(symbols):
+def load_stock_data():
+    symbols = [f"STK{i}" for i in range(1, 51)]
     data = []
     for symbol in symbols:
-        try:
-            stock = yf.Ticker(symbol)
-            hist = stock.history(period="2d")
-
-            if hist.shape[0] < 2:
-                continue
-
-            current_price = hist['Close'].iloc[-1]
-            previous_close = hist['Close'].iloc[-2]
-            volume = hist['Volume'].iloc[-1]
-            change = round((current_price - previous_close) / previous_close * 100, 2)
-
-            data.append({
-                "Symbol": symbol,
-                "Current Price": round(current_price, 2),
-                "Previous Close": round(previous_close, 2),
-                "Volume": int(volume),
-                "Change %": change,
-                "Volatility": round(abs(current_price - previous_close), 2),
-                "Sentiment": 0
-            })
-
-        except Exception as e:
-            print(f"Error with symbol {symbol}: {e}")
-
+        current_price = round(random.uniform(10, 500), 2)
+        previous_close = current_price + round(random.uniform(-5, 5), 2)
+        volume = random.randint(10000, 1000000)
+        change = round((current_price - previous_close) / previous_close * 100, 2)
+        volatility = round(random.uniform(1, 5), 2)
+        sentiment = random.uniform(-1, 1)
+        data.append({
+            "Symbol": symbol,
+            "Current Price": current_price,
+            "Previous Close": previous_close,
+            "Volume": volume,
+            "Change %": change,
+            "Volatility": volatility,
+            "Sentiment": sentiment
+        })
     return pd.DataFrame(data)
 
 # تحليل معنويات السوق البسيط
@@ -102,12 +93,9 @@ def main():
     price_range = st.sidebar.slider("نطاق السعر", 10.0, 500.0, (50.0, 200.0))
 
     # تحميل بيانات الأسهم وتطبيق الفلترة
-    def main():
-    stock_symbols = ["AAPL", "MSFT", "GOOG", "TSLA", "AMZN", "NVDA", "META", "AMD", "NFLX", "BA"]
-    df = load_stock_data_real(stock_symbols)
+    df = load_stock_data()
+    filtered_df = filter_stocks(df, min_volume, min_change, price_range[0], price_range[1])
 
-    st.title("تطبيق عرض بيانات الأسهم")
-    st.dataframe(df)
     # عرض معنويات السوق
     sentiment_result = analyze_market_sentiment(filtered_df)
     st.subheader("🧠 تحليل معنويات السوق")
