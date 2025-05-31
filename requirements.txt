@@ -4,3 +4,4 @@ pandas
 requests
 plotly
 websockets
+lxml==5.2.1
