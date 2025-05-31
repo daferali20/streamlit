@@ -7,6 +7,16 @@ from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
 # -- تنبيه التلقرام  ---
+# ضع هنا التوكن الخاص بالبوت
+bot_token = "1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4"
+
+# معرف المحادثة (شخصي أو قناة أو جروب)
+chat_id = "@D_Optionbot"  # ضع هنا الـ chat_id الصحيح
+
+# الرسالة التي تريد إرسالها
+message = "🚨 <b>سهم TSLA تجاوز المقاومة</b>\nالهدف التالي: 750 دولار"
+
+# إعدادات الطلب
 def send_telegram_alert(message: str):
     """إرسال تنبيه إلى Telegram"""
     try:
@@ -17,11 +27,11 @@ def send_telegram_alert(message: str):
             st.warning("إعدادات Telegram غير مكتملة")
             return False
             
-        url = f"https://api.telegram.org/bot{1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4}/sendMessage"
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {
-            "chat_id": D_Optionbot,
-            "text": message,
-            "parse_mode": "HTML"
+          "chat_id": chat_id,
+          "text": message,
+          "parse_mode": "HTML"
         }
         
         response = requests.post(url, json=payload)
@@ -60,8 +70,8 @@ with st.sidebar.expander("⚙️ إعدادات Telegram"):
             'chat_id': st.secrets.telegram.get('chat_id', '')
         }
     
-    new_token = st.text_input("1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4", st.session_state.telegram_setup['1144346518:AAFxKktlAv5phEX7l1GCNd2w-arM1soY5H4'])
-    new_chat_id = st.text_input("D_Optionbot", st.session_state.telegram_setup['chat_id'])
+    new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
+    new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
     
     if st.button("حفظ الإعدادات"):
         st.session_state.telegram_setup.update({
