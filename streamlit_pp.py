@@ -6,8 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
-from core.data_loader import get_stock_data
-from core.model import train_predictor
+
 #----
 if 'telegram_setup' not in st.session_state:
     st.session_state.telegram_setup = {
