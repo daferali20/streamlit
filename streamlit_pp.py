@@ -92,7 +92,27 @@ def main():
         dow = yf.Ticker("^DJI")
         dow_change = round(dow.history(period="1d")['Close'].pct_change().iloc[-1]*100, 2)
         st.metric("Dow Jones", f"{dow.history(period='1d')['Close'].iloc[-1]:.2f}", f"{dow_change}%")
-    
+    #--- الشريط الجانبي للتلقرام ---
+
+   with st.sidebar.expander("⚙️ إعدادات Telegram"):
+    new_token = st.text_input("Bot Token", st.session_state.telegram_setup['bot_token'])
+    new_chat_id = st.text_input("Chat ID", st.session_state.telegram_setup['chat_id'])
+
+    if st.button("حفظ الإعدادات"):
+        st.session_state.telegram_setup.update({
+            'bot_token': new_token,
+            'chat_id': new_chat_id
+        })
+        st.success("✅ تم حفظ الإعدادات")
+
+    if st.button("اختبار الإرسال"):
+        success = send_telegram_alert("🔔 <b>هذا رسالة اختبار من تطبيق التداول</b>\nتم تكوين الإعدادات بنجاح!")
+        if success:
+            st.success("📬 تم إرسال الرسالة الاختبارية بنجاح")
+        else:
+            st.error("❌ فشل إرسال الرسالة")
+
+    #------ لل-----لل ----
     # --- جلب بيانات الأسهم ---
     @st.cache_data(ttl=300)  # تحديث كل 5 دقائق
     def get_active_stocks():
