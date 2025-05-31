@@ -5,6 +5,8 @@ import requests
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from textblob import TextBlob
+
+# محاولة استيراد تحليل المشاعر
 try:
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
     analyzer = SentimentIntensityAnalyzer()
@@ -13,7 +15,7 @@ except ImportError:
     SENTIMENT_ANALYSIS_ENABLED = False
     st.warning("تحليل المشاعر غير متوفر بسبب عدم تثبيت المكتبات المطلوبة")
 
-# وظيفة التحليل:
+# دالة لتحديد التصنيف النصي للمشاعر
 def get_sentiment_label(score):
     if not SENTIMENT_ANALYSIS_ENABLED:
         return "غير متاح"
@@ -23,20 +25,33 @@ def get_sentiment_label(score):
     elif score < -0.05:
         return "سلبي"
     return "محايد"
+
+# زر لتثبيت المكتبات إن لم تكن موجودة
 if not SENTIMENT_ANALYSIS_ENABLED:
     if st.button("تثبيت مكتبات تحليل المشاعر"):
         try:
             import subprocess
-            subprocess.run(["pip", "install", "vaderSentiment", "textblob"])
+            subprocess.run(["pip", "install", "vaderSentiment", "textblob"], check=True)
             st.success("تم التثبيت بنجاح! يرجى إعادة تشغيل التطبيق")
-        except:
-            st.error("فشل التثبيت. يرجى التحقق من الأذونات")
-# عند الاستخدام:
+        except Exception as e:
+            st.error(f"فشل التثبيت: {e}")
+
+# بيانات أخبار وهمية كمثال
+news = pd.DataFrame({
+    "headline": [
+        "The stock market is performing well today.",
+        "Investors are worried about inflation.",
+        "Apple announces new iPhone with amazing features."
+    ]
+})
+
+# تنفيذ تحليل المشاعر
 if SENTIMENT_ANALYSIS_ENABLED and not news.empty:
     sentiments = [analyzer.polarity_scores(str(headline))['compound'] for headline in news['headline']]
     avg_sentiment = sum(sentiments) / len(sentiments)
     
     st.write(f"تحليل المشاعر: {get_sentiment_label(avg_sentiment)} ({avg_sentiment:.2f})")
+
 # تهيئة الصفحة
 st.set_page_config(
     page_title="ProTrade - أداة المضاربة اليومية",
