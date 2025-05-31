@@ -7,6 +7,12 @@ from datetime import datetime, timedelta
 from textblob import TextBlob
 import random
 #----
+if 'telegram_setup' not in st.session_state:
+    st.session_state.telegram_setup = {
+        'bot_token': '',
+        'chat_id': ''
+    }
+
 def send_telegram_alert(message: str):
     """إرسال تنبيه إلى Telegram"""
     try:
