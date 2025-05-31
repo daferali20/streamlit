@@ -13,12 +13,15 @@ min_change = st.sidebar.number_input("الحد الأدنى للتغيير ال�
 
 # جلب البيانات من Yahoo Finance (مثال: أكثر الأسهم نشاطًا)
 @st.cache_data
-def get_active_stocks():
-    url = "https://finance.yahoo.com/most-active"
-    tables = pd.read_html(url)
-    df = tables[0]
-    return df
 
+def get_active_stocks():
+    # استبدال كود Yahoo Finance بـ yfinance
+    tickers = ["AAPL", "TSLA", "AMZN", "META", "GOOG", "MSFT", "NVDA"]  # أسهم مثاليه
+    data = yf.download(tickers, period="1d")["Volume"]
+    df = pd.DataFrame(data.mean(), columns=["Volume"])
+    df["% Change"] = [round(x, 2) for x in yf.download(tickers, period="1d")["Close"].pct_change().iloc[-1]]
+    df["Symbol"] = df.index
+    return df.reset_index(drop=True)
 # تصفية النتائج حسب المعايير
 df = get_active_stocks()
 df_filtered = df[
