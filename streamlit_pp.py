@@ -24,8 +24,7 @@ def load_stock_data_real(symbols):
     for symbol in symbols:
         try:
             stock = yf.Ticker(symbol)
-            info = stock.info
-            hist = stock.history(period="2d")  # اليوم الحالي واليوم السابق
+            hist = stock.history(period="2d")
 
             if hist.shape[0] < 2:
                 continue
@@ -41,14 +40,14 @@ def load_stock_data_real(symbols):
                 "Previous Close": round(previous_close, 2),
                 "Volume": int(volume),
                 "Change %": change,
-                "Volatility": round(abs(current_price - previous_close), 2),  # تبسيط للتقلب
-                "Sentiment": 0  # مؤقتًا 0 - يمكن استبداله بتحليل مشاعر لاحقًا
+                "Volatility": round(abs(current_price - previous_close), 2),
+                "Sentiment": 0
             })
 
         except Exception as e:
-            print(f"خطأ في السهم {symbol}: {e}")
-    return pd.DataFrame(data)
+            print(f"Error with symbol {symbol}: {e}")
 
+    return pd.DataFrame(data)
 
 # تحليل معنويات السوق البسيط
 def analyze_market_sentiment(df):
@@ -103,8 +102,12 @@ def main():
     price_range = st.sidebar.slider("نطاق السعر", 10.0, 500.0, (50.0, 200.0))
 
     # تحميل بيانات الأسهم وتطبيق الفلترة
+    def main():
     stock_symbols = ["AAPL", "MSFT", "GOOG", "TSLA", "AMZN", "NVDA", "META", "AMD", "NFLX", "BA"]
     df = load_stock_data_real(stock_symbols)
+
+    st.title("تطبيق عرض بيانات الأسهم")
+    st.dataframe(df)
     # عرض معنويات السوق
     sentiment_result = analyze_market_sentiment(filtered_df)
     st.subheader("🧠 تحليل معنويات السوق")
