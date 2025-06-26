@@ -12,8 +12,8 @@ st.set_page_config(page_title="ProTrade - أداة المضاربة اليومي
 # ---------- إعدادات Telegram ----------
 #DEFAULT_BOT_TOKEN = "ضع_التوكن_هنا"
 #DEFAULT_CHAT_ID = "ضع_معرف_المحادثة_هنا"
-TELEGRAM_BOT_TOKEN=1079128294:AAHre_zWJNLLEBG1toniBDYbX5AKa6EokgM
-TELEGRAM_CHAT_ID=@D_Option
+TELEGRAM_BOT_TOKEN="1079128294:AAHre_zWJNLLEBG1toniBDYbX5AKa6EokgM"
+TELEGRAM_CHAT_ID="@D_Option"
 if 'telegram_setup' not in st.session_state:
     st.session_state.telegram_setup = {
         'bot_token': DEFAULT_BOT_TOKEN,
